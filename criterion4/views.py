@@ -140,33 +140,7 @@ def enrolment_ratio_pdf(request):
 
 # ---------------- PREVIOUS TABLE ENDS HERE ----------------
     elements.append(Spacer(1, 30)) # Space after the intake table
-
-    # ---------------- ENROLMENT RATIO FORMULA ----------------
-    # We use a nested table to simulate the fraction look in the image
-    fraction_table = Table([
-        ["Enrolment Ratio =", "(N1 + N2)"],
-        ["Enrolment Ratio =", ""], # The line will be drawn above 'N'
-        ["", "N"]
-    ], colWidths=[120, 80])
-
-    fraction_table.setStyle(TableStyle([
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 12),
-        # This line creates the fraction bar
-        ('LINEABOVE', (1, 2), (1, 2), 1, colors.black), 
-        # Span the "Enrolment Ratio =" text vertically to center it against the fraction
-        ('SPAN', (0, 0), (0, 2)), 
-    ]))
-
-    elements.append(fraction_table)
-    elements.append(Spacer(1, 20))
-
-    # ---------------- FOOTER TEXT ----------------
-    footer_text = "Following Table No. 4.1 shows Average Enrolment Ratio."
-    elements.append(Paragraph(footer_text, styles['Normal']))
-
+         
  # ---------------- BUILD PDF ----------------
     doc.build(elements)
     return response
