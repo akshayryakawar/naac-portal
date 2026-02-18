@@ -469,3 +469,317 @@ def students_passed_with_backlogs_pdf(request):
 
     doc.build(elements)
     return response
+
+#4.6
+from django.http import HttpResponse
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import getSampleStyleSheet
+
+from .models import PlacementandHigherStudies
+
+
+def placement_higher_studies_pdf(request):
+
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.lib.styles import getSampleStyleSheet
+    from django.http import HttpResponse
+    from .models import PlacementandHigherStudies
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="placement.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=landscape(A4))
+
+    styles = getSampleStyleSheet()
+
+    # ✅ CREATE ELEMENTS FIRST
+    elements = []
+
+    # -------- TITLE --------
+    elements.append(Paragraph(
+        "<b>Table 4.6.1 Placement and Higher Studies</b>",
+        styles["Title"]
+    ))
+
+    elements.append(Spacer(1,12))
+
+    # -------- YOUR TEXT --------
+    elements.append(Paragraph(
+        "<b>Assessment Points = 40 × Average Placement</b>",
+        styles["Heading2"]
+    ))
+
+    elements.append(Spacer(1,8))
+
+    elements.append(Paragraph("Where,", styles["Normal"]))
+    elements.append(Paragraph(
+        "X = No. of students placed in companies/Government sector",
+        styles["Normal"]
+    ))
+    elements.append(Paragraph(
+        "Y = Number of students admitted to higher studies",
+        styles["Normal"]
+    ))
+    elements.append(Paragraph(
+        "N = Total number of final year students",
+        styles["Normal"]
+    ))
+
+    elements.append(Spacer(1,15))
+
+    # -------- FETCH DATA --------
+    records = PlacementandHigherStudies.objects.order_by("-id")[:3]
+
+    if len(records) < 3:
+        elements.append(Paragraph("Enter 3 records first.", styles["Normal"]))
+        doc.build(elements)
+        return response
+
+    r1,r2,r3 = records
+
+    P1,P2,P3 = r1.P, r2.P, r3.P
+    avg = round((P1+P2+P3)/3,2)
+    assess = round(40*avg,2)
+
+    # -------- TABLE --------
+    data = [
+        ["Item", r1.year_label, r2.year_label, r3.year_label],
+        ["N", r1.N, r2.N, r3.N],
+        ["X", r1.X, r2.X, r3.X],
+        ["Y", r1.Y, r2.Y, r3.Y],
+        ["Z", r1.Z, r2.Z, r3.Z],
+        ["Placement Index (P)", P1,P2,P3],
+        ["Average Placement", avg,"",""],
+        ["Assessment", assess,"",""],
+    ]
+
+    table = Table(
+    data,
+    colWidths=[170,110,110,110],   # 👈 column size
+    rowHeights=25                 # 👈 row height
+)
+
+
+    table.setStyle(TableStyle([
+        ("GRID",(0,0),(-1,-1),1,colors.black),
+        ("BACKGROUND",(0,0),(-1,0),colors.lightblue),
+        ("ALIGN",(0,0),(-1,-1),"CENTER"),
+    ]))
+
+    elements.append(table)
+
+    doc.build(elements)
+
+    return response
+
+#4.1.1
+from django.http import HttpResponse
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import getSampleStyleSheet
+
+from .models import AcademicPerformance
+
+
+def academic_performance_pdf(request):
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="academic_performance.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=landscape(A4))
+    styles = getSampleStyleSheet()
+    elements = []
+
+    # -------- TITLE --------
+    elements.append(Paragraph(
+        "<b>Table 4.4.1 Academic Performance in Second Year</b>",
+        styles["Title"]
+    ))
+    elements.append(Spacer(1,12))
+
+    # -------- FORMULA TEXT --------
+    elements.append(Paragraph(
+        "<b>API = X × (Y/Z)</b>",
+        styles["Heading2"]
+    ))
+
+    elements.append(Paragraph(
+        "<b>Academic Performance Level = 2 × Average API</b>",
+        styles["Heading2"]
+    ))
+
+    elements.append(Spacer(1,10))
+
+    elements.append(Paragraph("Where,", styles["Normal"]))
+    elements.append(Paragraph("X = Mean CGPA / Mean Percentage", styles["Normal"]))
+    elements.append(Paragraph("Y = Number of successful students", styles["Normal"]))
+    elements.append(Paragraph("Z = Number of students appeared", styles["Normal"]))
+
+    elements.append(Spacer(1,15))
+
+    # -------- FETCH LAST 3 YEARS --------
+    records = AcademicPerformance.objects.order_by("-id")[:3]
+
+    if len(records) < 3:
+        elements.append(Paragraph("Enter 3 records first.", styles["Normal"]))
+        doc.build(elements)
+        return response
+
+    r1, r2, r3 = records
+
+    # -------- CALCULATIONS --------
+    api1, api2, api3 = r1.api, r2.api, r3.api
+    avg_api = round((api1 + api2 + api3) / 3, 2)
+    apl = round(2 * avg_api, 2)
+
+    # -------- TABLE DATA --------
+    data = [
+        ["Academic Performance", r1.year_label, r2.year_label, r3.year_label],
+
+        ["Mean CGPA / % (X)", r1.X, r2.X, r3.X],
+        ["Successful Students (Y)", r1.Y, r2.Y, r3.Y],
+        ["Appeared Students (Z)", r1.Z, r2.Z, r3.Z],
+
+        ["API = X*(Y/Z)", api1, api2, api3],
+
+        ["Average API", avg_api, "", ""],
+        ["Academic Performance Level", apl, "", ""],
+    ]
+
+    table = Table(
+        data,
+        colWidths=[220,110,110,110],
+        rowHeights=25
+    )
+
+    table.setStyle(TableStyle([
+        ("GRID",(0,0),(-1,-1),1,colors.black),
+        ("BACKGROUND",(0,0),(-1,0),colors.lightblue),
+        ("ALIGN",(0,0),(-1,-1),"CENTER"),
+        ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
+    ]))
+
+    elements.append(table)
+
+    doc.build(elements)
+
+    return response
+
+#4.2.1
+from django.http import HttpResponse
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import getSampleStyleSheet
+
+def success_rate_combined_pdf(request):
+
+    from django.http import HttpResponse
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer,PageBreak
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.lib.styles import getSampleStyleSheet
+
+    from .models import SuccessRate, SuccessRateWithBacklogs
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = 'inline; filename="Success_Rate.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=landscape(A4))
+    styles = getSampleStyleSheet()
+    elements = []
+
+    
+    # =========================
+    # TABLE 4.2.1 (NO BACKLOG)
+    # =========================
+
+    # ---------------- FORMULA SECTION ----------------
+    elements.append(Paragraph("<b>4.2.1. Success rate without backlogs in any year of study (40)</b>", styles["Heading3"]))
+    elements.append(Spacer(1, 8))
+
+    fraction_table = Table([
+        ["SI  =", "Number of students who have passed from the program without backlog"],
+        ["", "________________________________________________________________________________________"],
+        ["", "No. of students admitted in the first year of that batch + actual admitted in 2nd year via lateral entry"],
+    ], colWidths=[160, 450])
+
+    fraction_table.setStyle(TableStyle([
+        ("ALIGN",(0,0),(-1,-1),"CENTER"),
+    ]))
+   
+    # ✅ THIS LINE WAS MISSING
+    elements.append(fraction_table)
+    elements.append(Paragraph("Average SI = Mean of success index (SI) for past three batches",))
+    elements.append(Paragraph("Success rate without backlogs in any year of study =<b> 40 × Average SI</b>",))
+    elements.append(Spacer(1,15))
+
+    rec = SuccessRate.objects.order_by("-id")[:3]
+
+    if len(rec) == 3:
+        r1,r2,r3 = rec
+
+        data1 = [
+            ["Item", r1.year_label, r2.year_label, r3.year_label],
+            ["Total students (X)", r1.X, r2.X, r3.X],
+            ["Passed (Y)", r1.Y, r2.Y, r3.Y],
+            ["Success Index", r1.SI, r2.SI, r3.SI],
+            ["Average SI", r1.avg_si,"",""],
+            ["Success Rate (40×Avg)", r1.success_rate,"",""],
+        ]
+
+        t1 = Table(data1,colWidths=[220,110,110,110],rowHeights=25)
+        t1.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),1,colors.black),
+            ("BACKGROUND",(0,0),(-1,0),colors.lightblue),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),
+        ]))
+
+        elements.append(t1)
+        elements.append(Paragraph("<b>Table No. 4.2.1 : Success rate without backlogs in any year of study</b>", styles["Heading3"]))
+        elements.append(Paragraph("Success rate without backlogs in any year of study	=	40 × Average SI"))
+        elements.append(Paragraph("Success rate without backlogs in any year of study	=	40 x 0.26"))
+        elements.append(Paragraph("<b>Success Rate	=	10.4</b>"))
+    # SPACE BETWEEN TABLES
+    elements.append(PageBreak())
+
+    # =========================
+    # TABLE 4.2.2 (WITH BACKLOG)
+    # =========================
+
+    elements.append(Paragraph(
+        "<b>Table 4.2.2 Success rate with backlogs</b>",
+        styles["Title"]
+    ))
+    elements.append(Spacer(1,10))
+
+    rec2 = SuccessRateWithBacklogs.objects.order_by("-id")[:3]
+
+    if len(rec2) == 3:
+        r1,r2,r3 = rec2
+
+        data2 = [
+            ["Item", r1.year_label, r2.year_label, r3.year_label],
+            ["Total students (X)", r1.X, r2.X, r3.X],
+            ["Passed (Y)", r1.Y, r2.Y, r3.Y],
+            ["Success Index", r1.SI, r2.SI, r3.SI],
+            ["Average SI", r1.avg_si,"",""],
+            ["Success Rate (20×Avg)", r1.success_rate,"",""],
+        ]
+
+        t2 = Table(data2, colWidths=[220,110,110,110],rowHeights=25)
+        t2.setStyle(TableStyle([
+            ("GRID",(0,0),(-1,-1),1,colors.black),
+            ("BACKGROUND",(0,0),(-1,0),colors.lightblue),
+            ("ALIGN",(0,0),(-1,-1),"CENTER"),
+        ]))
+
+        elements.append(t2)
+
+    doc.build(elements)
+    return response

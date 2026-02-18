@@ -94,3 +94,187 @@ class studentspassedwithbacklogs(models.Model):
 
     def __str__(self):
         return self.year_of_entry
+    
+
+ #4.6
+from django.db import models
+
+class PlacementandHigherStudies(models.Model):
+
+    year_label = models.CharField(max_length=50, unique=True)
+
+    # Data fields
+    N = models.IntegerField(default=0)
+    X = models.IntegerField(default=0)
+    Y = models.IntegerField(default=0)
+    Z = models.IntegerField(default=0)
+
+    # ---------- Placement Index ----------
+    @property
+    def P(self):
+        if self.N == 0:
+            return 0
+        return round(((1.25*self.X)+self.Y+self.Z)/self.N,2)
+
+    # ---------- Fetch last 3 year P values ----------
+    @staticmethod
+    def last_three_records():
+        return PlacementandHigherStudies.objects.order_by("-id")[:3]
+
+    @staticmethod
+    def get_P_values():
+        records = PlacementandHigherStudies.last_three_records()
+
+        if len(records) < 3:
+            return (0,0,0)
+
+        return (records[0].P, records[1].P, records[2].P)
+
+    # ---------- Average Placement ----------
+    @property
+    def average_placement(self):
+        P1,P2,P3 = PlacementandHigherStudies.get_P_values()
+        return round((P1+P2+P3)/3,2)
+
+    # ---------- Assessment ----------
+    @property
+    def assessment(self):
+        return round(40*self.average_placement,2)
+
+    def __str__(self):
+        return self.year_label
+
+#4.4.1
+from django.db import models
+
+class AcademicPerformance(models.Model):
+
+    year_label = models.CharField(max_length=50, unique=True)
+
+    # ---- Table Fields ----
+    X = models.FloatField(default=0)   # Mean CGPA / %
+    Y = models.IntegerField(default=0) # Successful students
+    Z = models.IntegerField(default=0) # Appeared students
+
+    # ---------- API ----------
+    @property
+    def api(self):
+        if self.Z == 0:
+            return 0
+        return round(self.X * (self.Y / self.Z), 2)
+
+    # ---------- Last 3 records ----------
+    @staticmethod
+    def last_three_records():
+        return AcademicPerformance.objects.order_by("-id")[:3]
+
+    @staticmethod
+    def get_api_values():
+        records = AcademicPerformance.last_three_records()
+
+        if len(records) < 3:
+            return (0,0,0)
+
+        return (records[0].api, records[1].api, records[2].api)
+
+    # ---------- Average API ----------
+    @property
+    def average_api(self):
+        a1,a2,a3 = AcademicPerformance.get_api_values()
+        return round((a1+a2+a3)/3, 2)
+
+    # ---------- Academic Performance Level ----------
+    @property
+    def academic_performance_level(self):
+        return round(2 * self.average_api, 2)
+
+    def __str__(self):
+        return self.year_label
+
+#4.2.2
+from django.db import models
+from django.db.models import Avg
+
+
+# =========================================
+# TABLE 4.2.1 — WITHOUT BACKLOGS
+# =========================================
+class SuccessRate(models.Model):
+
+    year_label = models.CharField(max_length=20, unique=True)
+
+    # Data
+    X = models.IntegerField(default=0)  # Total students
+    Y = models.IntegerField(default=0)  # Passed without backlog
+
+    # ---------- Success Index ----------
+    @property
+    def SI(self):
+        if self.X == 0:
+            return 0
+        return round(self.Y / self.X, 2)
+
+    # ---------- Average of last 3 years ----------
+    @classmethod
+    def last_three_avg_si(cls):
+        last3 = cls.objects.all().order_by("-year_label")[:3]
+
+        if not last3:
+            return 0
+
+        avg = sum([obj.SI for obj in last3]) / len(last3)
+        return round(avg, 2)
+
+    @property
+    def avg_si(self):
+        return self.last_three_avg_si()
+
+    # ---------- Success Rate ----------
+    @property
+    def success_rate(self):
+        return round(20 * self.avg_si, 2)  # NBA formula
+
+    def __str__(self):
+        return self.year_label
+
+
+# =========================================
+# TABLE 4.2.2 — WITH BACKLOGS
+# =========================================
+class SuccessRateWithBacklogs(models.Model):
+
+    year_label = models.CharField(max_length=20, unique=True)
+
+    # Data
+    X = models.IntegerField(default=0)  # Total students
+    Y = models.IntegerField(default=0)  # Passed with backlog
+
+    # ---------- Success Index ----------
+    @property
+    def SI(self):
+        if self.X == 0:
+            return 0
+        return round(self.Y / self.X, 2)
+
+    # ---------- Average of last 3 years ----------
+    @classmethod
+    def last_three_avg_si(cls):
+        last3 = cls.objects.all().order_by("-year_label")[:3]
+
+        if not last3:
+            return 0
+
+        avg = sum([obj.SI for obj in last3]) / len(last3)
+        return round(avg, 2)
+
+    @property
+    def avg_si(self):
+        return self.last_three_avg_si()
+
+    # ---------- Success Rate ----------
+    @property
+    def success_rate(self):
+        return round(20 * self.avg_si, 2)  # NBA formula
+
+    def __str__(self):
+        return self.year_label
