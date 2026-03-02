@@ -2,94 +2,122 @@
 
 {% block extra_css %}
 <style>
-    .naac-table-container {
-        padding: 1rem 0;
-    }
+.naac-table-container {
+    padding: 1rem 0;
+}
 
-    .naac-table-wrapper {
-        background: white;
-        padding: 2px;
-        border-radius: 4px;
-        overflow-x: auto;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        margin-top: 1rem;
-    }
+.naac-table-wrapper {
+    background: white;
+    padding: 2px;
+    border-radius: 4px;
+    overflow-x: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+}
 
-    .naac-table {
-        width: 100%;
-        border-collapse: collapse;
-        color: #333 !important;
-        font-family: 'Inter', sans-serif;
-        font-size: 13px;
-    }
+.naac-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #333;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+}
 
-    .naac-table th,
-    .naac-table td {
-        border: 1.5px solid #444;
-        padding: 12px 10px;
-        vertical-align: middle;
-    }
+.naac-table th,
+.naac-table td {
+    border: 1.5px solid #444;
+    padding: 12px 10px;
+    vertical-align: middle;
+}
 
-    .naac-table th {
-        background-color: #f8f9fa;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        text-align: center;
-    }
+.naac-table th {
+    background-color: #f8f9fa;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
 
-    .naac-table tr:nth-child(even) {
-        background-color: #fafafa;
-    }
+.naac-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
 
-    .naac-table tr:hover {
-        background-color: #f0f7ff;
-    }
+.naac-table tr:hover {
+    background-color: #f0f7ff;
+}
 
-    .level-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 50px;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        background: #e1f5fe;
-        color: #01579b;
-        border: 1px solid #b3e5fc;
-    }
+.level-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: #e1f5fe;
+    color: #01579b;
+    border: 1px solid #b3e5fc;
+}
 
-    .actions-cell {
-        min-width: 100px;
-    }
+.actions-cell {
+    min-width: 100px;
+}
 
-    @keyframes highlight-fade {
-        0% {
-            background-color: rgba(0, 123, 255, 0.1);
-        }
+.year-section {
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+}
 
-        100% {
-            background-color: transparent;
-        }
-    }
+/* ================================
+   SEARCH BAR FIX (PROPER WAY)
+================================ */
 
-    .highlight-section {
-        animation: highlight-fade 2s ease-out;
-        border-radius: 8px;
-    }
+/* Default input styling */
+.search-input-group .form-control {
+    background: transparent;
+}
 
-    .fw-extrabold {
-        font-weight: 800;
-    }
+/* LIGHT MODE */
+[data-theme="light"] .search-input-group .input-group-text {
+    background: #ffffff;
+    border-color: #ced4da;
+    color: #495057;
+}
 
-    @keyframes highlightSection {
-        0% {
-            background-color: rgba(31, 182, 255, 0.1);
-        }
+[data-theme="light"] .search-input-group .form-control {
+    background: #ffffff;
+    border-color: #ced4da;
+    color: #212529;
+}
 
-        100% {
-            background-color: transparent;
-        }
-    }
+[data-theme="light"] .search-input-group .form-control::placeholder {
+    color: #6c757d;
+}
+
+[data-theme="light"] .search-input-group .bi-search {
+    color: #495057 !important;
+}
+
+/* DARK MODE */
+[data-theme="dark"] .search-input-group .input-group-text {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+}
+
+[data-theme="dark"] .search-input-group .form-control {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.2);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .search-input-group .form-control::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+[data-theme="dark"] .search-input-group .bi-search {
+    color: rgba(255,255,255,0.9) !important;
+}
 </style>
 {% endblock %}
 
@@ -107,9 +135,10 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div class="search-container flex-grow-1" style="min-width: 300px;">
             <form method="GET" action="{% url 'participation_list' %}" class="d-flex gap-2">
-                <div class="input-group shadow-sm">
-                    <span class="input-group-text bg-white border-end-0">
-                        <i class="bi bi-search text-muted"></i>
+                <!-- Added search-input-group class here -->
+                <div class="input-group shadow-sm search-input-group">
+                    <span class="input-group-text border-end-0">
+                        <i class="bi bi-search"></i>
                     </span>
                     <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Search records..."
                         value="{{ query|default:'' }}">
@@ -125,7 +154,7 @@
         </div>
 
         <div class="d-flex gap-3 align-items-center">
-            <!-- Jump to Year Filter -->
+            <!-- Jump to Year -->
             <div class="dropdown">
                 <button class="btn btn-outline-primary dropdown-toggle shadow-sm px-4" type="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -133,7 +162,6 @@
                 </button>
                 <ul class="dropdown-menu shadow border-0" id="jump-to-year-menu"
                     style="max-height: 300px; overflow-y: auto;">
-                    <!-- Populated by JS -->
                 </ul>
             </div>
 
@@ -146,11 +174,12 @@
     {% if data or query %}
     <div id="participation-sections">
         {% for year_group in year_list %}
-        <div id="section-{{ year_group.grouper|slugify }}" class="year-section mb-5 reveal"
+        <div id="section-{{ year_group.grouper|slugify }}" class="year-section mb-5"
             data-year="{{ year_group.grouper }}">
+
             <div class="year-header d-flex justify-content-between align-items-center mb-3">
                 <h3 class="h4 mb-0 fw-extrabold text-primary border-start border-4 border-primary ps-3">
-                    <span class="cay-label" style="display:none;"></span> Academic Year: {{ year_group.grouper }}
+                    <span class="cay-label"></span> Academic Year: {{ year_group.grouper }}
                 </h3>
                 <span class="badge bg-primary-glass text-primary px-3 py-2 rounded-pill shadow-sm">
                     <i class="bi bi-list-check me-1"></i> Records: {{ year_group.list|length }}
@@ -205,6 +234,7 @@
         </div>
         {% endfor %}
     </div>
+
     {% else %}
     <div class="text-center py-5">
         <i class="bi bi-inbox display-1 text-muted opacity-25 mb-4 d-block"></i>
@@ -213,8 +243,6 @@
     </div>
     {% endif %}
 
-    <!-- Placeholder for missing CAY years if no data exists at all -->
-    <div id="missing-years-container"></div>
 </div>
 
 {% endblock %}
@@ -222,98 +250,61 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // We anchor CAY to 2023-24. 
-        // This is flexible enough to match "2023-24" or "CAY (2023-24)"
-        const startYear = 2023;
 
-        const cay = `${startYear}-${(startYear + 1).toString().slice(-2)}`;
-        const cay_m1 = `${startYear - 1}-${startYear.toString().slice(-2)}`;
-        const cay_m2 = `${startYear - 2}-${(startYear - 1).toString().slice(-2)}`;
-
-        const yearsConfig = [
-            { label: 'CAY', year: cay },
-            { label: 'CAY m1', year: cay_m1 },
-            { label: 'CAY m2', year: cay_m2 }
-        ];
-
-        const container = document.getElementById('participation-sections') || document.getElementById('missing-years-container');
         const menu = document.getElementById('jump-to-year-menu');
+        const cayLabels = ['CAY', 'CAY m1', 'CAY m2'];
 
-        // Robust matching: find section that CONTAINS the year string
-        yearsConfig.forEach(config => {
-            const sections = document.querySelectorAll('.year-section');
-            const existingSection = Array.from(sections).find(s =>
-                s.dataset.year && s.dataset.year.includes(config.year)
-            );
+        // Get all year sections
+        const allSections = Array.from(document.querySelectorAll('.year-section'));
 
-            const listContainer = document.getElementById('participation-sections');
+        // Sort newest year first
+        allSections.sort((a, b) => {
+            return (b.dataset.year || '').localeCompare(a.dataset.year || '');
+        });
 
-            if (existingSection) {
-                // Label the section if it's one of our CAY years
-                const labelSpan = existingSection.querySelector('.cay-label');
-                if (labelSpan) {
-                    labelSpan.textContent = config.label + ' ';
-                    labelSpan.style.display = 'inline-block';
-                    labelSpan.className = 'badge bg-info-glass text-info me-2';
-                }
+        // Label each section and make sure it is visible
+        allSections.forEach((section, index) => {
+            section.style.opacity = '1';
+            section.style.visibility = 'visible';
+            section.style.display = 'block';
+            section.style.transform = 'none';
 
-                // If the section is already in participation-sections, it will naturally be ordered 
-                // by the view (which we changed to -id). 
-                // We don't necessarily want to force prepend here if we want to respect the server-side grouping order.
-            } else {
-                // Create placeholder for missing CAY year ONLY
-                const sectionId = `section-${config.year.replace(/[^a-z0-9]/gi, '-')}`;
-                const missingHtml = `
-                    <div class="year-section mb-5" data-year="${config.year}" id="${sectionId}">
-                        <div class="year-header d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="h4 mb-0 fw-extrabold text-muted border-start border-4 border-secondary ps-3">
-                                <span class="badge bg-secondary-glass text-secondary me-2">${config.label}</span>
-                                Academic Year: ${config.year}
-                            </h3>
-                        </div>
-                        <div class="alert alert-light border text-center py-4 bg-white shadow-sm rounded-4">
-                            <p class="text-muted mb-0">No records available for this academic year.</p>
-                        </div>
-                    </div>
-                `;
-                const missingContainer = document.getElementById('missing-years-container');
-                if (missingContainer) {
-                    // Prepend so CAY is top, then CAY-m1, then CAY-m2 if they are all missing
-                    missingContainer.insertAdjacentHTML('beforeend', missingHtml);
-                }
+            const labelSpan = section.querySelector('.cay-label');
+            if (labelSpan && cayLabels[index]) {
+                labelSpan.textContent = cayLabels[index];
+                labelSpan.className = 'badge bg-primary me-2';
+                labelSpan.style.display = 'inline-block';
             }
         });
 
-        // Populate Dropdown
+        // Populate Jump to Year dropdown
         if (menu) {
             menu.innerHTML = '';
-            const allSections = document.querySelectorAll('.year-section');
-            allSections.forEach(s => {
-                const yearLabel = s.dataset.year;
+            allSections.forEach((section, index) => {
                 const li = document.createElement('li');
-                li.innerHTML = `<a class="dropdown-item" href="#${s.id}">${yearLabel}</a>`;
+                const prefix = cayLabels[index] ? `<strong>${cayLabels[index]}</strong> — ` : '';
+                li.innerHTML = `<a class="dropdown-item" href="#${section.id}">
+                    ${prefix}${section.dataset.year}
+                </a>`;
                 menu.appendChild(li);
             });
         }
 
-        // Smooth Scroll
-        document.querySelectorAll('.dropdown-item').forEach(anchor => {
+        // Smooth scroll on dropdown click
+        document.querySelectorAll('#jump-to-year-menu .dropdown-item').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-                const targetId = this.getAttribute('href');
-                const target = document.querySelector(targetId);
+                const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    const nav = document.getElementById('mainNav');
+                    const nav = document.querySelector('nav');
                     const offset = nav ? nav.offsetHeight + 20 : 100;
-                    window.scrollTo({
-                        top: target.offsetTop - offset,
-                        behavior: 'smooth'
-                    });
+                    window.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
                     target.classList.add('highlight-section');
                     setTimeout(() => target.classList.remove('highlight-section'), 2000);
                 }
             });
         });
+
     });
 </script>
 {% endblock %}

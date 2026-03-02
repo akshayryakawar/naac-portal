@@ -445,3 +445,7 @@ class AcademicPerformance4_5_1(models.Model):
 
     def __str__(self):
         return self.year_label    
+
+
+#all in one
+        

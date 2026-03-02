@@ -16,6 +16,7 @@ from .views import dashboard
 from .views import overview
 from .views import about
 from .views import global_search
+from .views import full_report_pdf
 
 urlpatterns = [
     path("", criterion4_home, name="criterion4_home"),
@@ -36,6 +37,8 @@ urlpatterns = [
     path("overview/", overview, name="overview"),
     path("about/", about, name="about"),
     path("search/", global_search, name="global_search"),
+   path('criterion4/full-report/', full_report_pdf, name='full_report_pdf'),
+
 ]
 
 # 4.1

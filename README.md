@@ -121,7 +121,7 @@ naac_portal/
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
+git clone https://github.com/akshayryakawar/Accredify.git
 cd your-repo-name
 
 #Create Virtual Environment
